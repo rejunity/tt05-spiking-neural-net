@@ -2,6 +2,7 @@
 
 # Network
   - 25.88% 243085um 7918 cells 544 dff, 23.26 min gds, 13.55 viewer     <- (16) x 16 x 8
+  - 40.98% 393467um 12384 cells 800 dff, 19.59 min gds,                 <- (16) x 16 x 16 x 8
 
 
 # What is Tiny Tapeout?
