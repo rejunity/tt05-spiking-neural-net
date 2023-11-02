@@ -64,7 +64,68 @@ def neuron(x, w, last_u, shift = 0, threshold = 5):
 #     print((2**bits)*x, sum(xs)/len(xs), "  ---   ", xs)
 
 @cocotb.test()
+async def test_snn_silence(dut):
+    await reset(dut)
+    await ClockCycles(dut.clk, 8)
+    dut._log.info("execute")
+    dut.uio_in.value = 2
+    for i in range(32):
+        await ClockCycles(dut.clk, 1)
+        print_chip_state(dut)
+    await done(dut)
+
+
+@cocotb.test()
 async def test_snn(dut):
+
+    w = 1 << 638 << 1 << 256 + 1 << 254 + 1
+    x = 0b0000_0001
+
+    await reset(dut)
+    u = 0
+    spike_train = []
+
+    if w >= 0:
+        dut._log.info(f"load weights {bin(w)}")
+        dut.uio_in.value = 1
+        await ClockCycles(dut.clk, 1)
+        # for v in struct.Struct('>I').pack(w):
+        for n in range(16):
+            dut.ui_in.value = 0 #1+2+4+8
+            await ClockCycles(dut.clk, 1)
+        for n in range(32):
+            dut.ui_in.value = 63#1+2+4
+            await ClockCycles(dut.clk, 1)
+        for n in range(32):
+            dut.ui_in.value = 1
+            await ClockCycles(dut.clk, 1)
+        # await ClockCycles(dut.clk, 1)      
+        print_chip_state(dut, print_weights=True)
+
+    dut._log.info(f"set input {bin(x)}")
+    dut.uio_in.value = 0
+    for v in struct.Struct('>I').pack(x):
+        dut.ui_in.value = v
+        await ClockCycles(dut.clk, 1)
+    print_chip_state(dut)
+
+    dut._log.info("execute")
+    dut.uio_in.value = 2
+    for i in range(32):
+        await ClockCycles(dut.clk, 1)
+        print_chip_state(dut)
+
+        # spike, u = neuron(x, w, last_u=u)
+        # print_chip_state(dut, sim=(spike, u))
+        # assert dut.uo_out[0] == spike
+        # spike_train.append(dut.uo_out[0].value)
+        # dut._log.info(f"OK {sum(spike_train)} {str(spike_train).replace(', ', '')}")
+
+    await done(dut)
+
+
+@cocotb.test()
+async def test_snn_overflow(dut):
 
     w = -1
     x = 0b0101_0101_0101_0101
@@ -105,15 +166,17 @@ async def test_snn(dut):
 
 ### UTILS #####################################################################
 
-def print_chip_state(dut, sim=None):
+def print_chip_state(dut, sim=None, print_weights=False):
     try:
         internal = dut.tt_um_rejunity_snn_uut
         print(  "W" if dut.uio_in.value & 1 else "I",
                 "X" if dut.uio_in.value & 2 else " ",
                 dut.ui_in.value, '|',
                 internal.inputs.value, '*',
-                internal.weights.value, '=',
+                sum(internal.weights.value), '=',
+                internal.weights.value if print_weights else "", '=',
                 internal.outputs_0.value,
+                internal.outputs_1.value,
                 dut.uo_out.value
                 # int(internal.neuron.), '|',
                 # "$" if internal.neuron.is_spike == 1 else " ",
