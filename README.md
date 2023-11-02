@@ -1,5 +1,9 @@
 ![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg) ![](../../workflows/test/badge.svg)
 
+# Network
+  - 25.88% 243085um 7918 cells 544 dff, 23.26 min gds, 13.55 viewer     <- (16) x 16 x 8
+
+
 # What is Tiny Tapeout?
 
 TinyTapeout is an educational project that aims to make it easier and cheaper than ever to get your digital designs manufactured on a real chip.
