@@ -6,12 +6,18 @@ project:
 # If using an HDL, set wokwi_id as 0 and uncomment and list your source files here. 
 # Source files must be in ./src and you must list each source file separately
   source_files:        
-    - tt_um_seven_segment_seconds.v
-    - decoder.v
-  top_module:  "tt_um_seven_segment_seconds"      # Put the name of your top module here, must start with "tt_um_". Make it unique by including your github username
+    - adder_tree.v
+    - multiplier_accumulator.v
+    - signed_clamped_adder.v
+    - pwm.v
+    - membrane.v
+    - neuron_lif.v
+    - neuron_pwm.v
+    - tt_um_rejunity_snn.v
+  top_module:  "tt_um_rejunity_snn"      # Put the name of your top module here, must start with "tt_um_". Make it unique by including your github username
 
 # How many tiles your design occupies? A single tile is about 167x108 uM.
-  tiles: "1x1"    # Valid values: 1x1, 1x2, 2x2, 3x2, 4x2 or 8x2
+  tiles: "8x2"    # Valid values: 1x1, 1x2, 2x2, 3x2, 4x2 or 8x2
 
 # Keep a track of the submission yaml
 yaml_version: 4
