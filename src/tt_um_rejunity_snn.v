@@ -81,9 +81,16 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
 
     reg [WEIGHTS-1:0] weights;
 
-    assign weights_0 = weights[0         +: WEIGHTS_0];
-    assign weights_1 = weights[WEIGHTS_0 +: WEIGHTS_1];
-    assign weights_2 = weights[WEIGHTS_1 +: WEIGHTS_2];
+    reg [WEIGHTS_0-1:0] weights_0_;
+    reg [WEIGHTS_1-1:0] weights_1_;
+    reg [WEIGHTS_2-1:0] weights_2_;
+
+    // assign weights_0 = weights[WEIGHTS_0-1:0];
+    // assign weights_1 = weights[WEIGHTS_0+WEIGHTS_1-1:WEIGHTS_0];
+    // assign weights_2 = weights[WEIGHTS_0+WEIGHTS_1+WEIGHTS_2-1:WEIGHTS_0+WEIGHTS_1];
+    assign weights_0 = weights[0                    +: WEIGHTS_0];
+    assign weights_1 = weights[WEIGHTS_0            +: WEIGHTS_1];
+    assign weights_2 = weights[WEIGHTS_0+WEIGHTS_1  +: WEIGHTS_2];
 
     for (i = 0; i < NEURONS_0; i = i+1) begin : layer_0
         neuron_lif #(.SYNAPSES(SYNAPSES_PER_NEURON_0), .THRESHOLD_BITS(THRESHOLD_0_BITS)) lif (
@@ -134,12 +141,14 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
     wire [INPUTS-1: 0] new_inputs;
     wire [WEIGHTS-1:0] new_weights;
     if (WEIGHTS > 8) begin
-        assign new_weights = { weights[0 +: WEIGHTS-8], data_in };
+        assign new_weights = { data_in, weights[8 +: WEIGHTS-8]}; // upload first layer first
+        // assign new_weights = { weights[0 +: WEIGHTS-8], data_in };
     end else begin
         assign new_weights = data_in[WEIGHTS-1:0];
     end
     if (INPUTS > 8) begin
-        assign new_inputs = { inputs[0 +: INPUTS-8], data_in };
+        assign new_inputs = { data_in, inputs[8 +: INPUTS-8] }; // upload with struct.pack "<"" order
+        // assign new_inputs = { inputs[0 +: INPUTS-8], data_in };
     end else begin
         assign new_inputs = data_in[INPUTS-1:0];
     end
@@ -150,10 +159,15 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
             weights <= WEIGHT_INIT;
             inputs <= 0;
             shift <= 0;
-            threshold_0 <= 5;
-            threshold_1 <= 9;
-            threshold_2 <= 12;
+            threshold_0 <= 3;
+            threshold_1 <= 7;
+            threshold_2 <= 9;
             // bias <= 0;
+
+            weights_0_ <= 0;
+            weights_1_ <= 0;
+            weights_2_ <= 0;
+
         end else begin
             if (input_mode) begin
                 if (input_weights)
