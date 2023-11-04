@@ -149,14 +149,22 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
     assign batchnorm_params_2 = batchnorm_params[(NEURONS_0+NEURONS_1)*BN_PARAM_BITS +: NEURONS_2*BN_PARAM_BITS];
 
     for (i = 0; i < NEURONS_0; i = i+1) begin : layer_0
+
+        wire [3:0] bn_factor = batchnorm_params_0[BN_PARAM_BITS*i +: 4];
+        wire [BN_ADD_0_BITS-1:0] bn_addend;
+        sign_extend #(4, BN_ADD_0_BITS) sign_extend_bn_addend (
+            .in(batchnorm_params_0[4 + BN_PARAM_BITS*i +: 4]),
+            .out(bn_addend)
+        );
+
         neuron_lif #(.SYNAPSES(SYNAPSES_PER_NEURON_0), .THRESHOLD_BITS(THRESHOLD_0_BITS), .BATCHNORM_ADDEND_BITS(BN_ADD_0_BITS)) lif (
             .clk(clk),
             .reset(reset),
             .enable(execute),
             .inputs(inputs_0 & CONNECTION_MASK_0[i]),
             .weights(weights_0[SYNAPSES_PER_NEURON_0*i +: SYNAPSES_PER_NEURON_0]),
-            .batchnorm_factor(batchnorm_params_0[BN_PARAM_BITS*i +: 4]),
-            .batchnorm_addend(batchnorm_addend_0),
+            .batchnorm_factor(bn_factor),
+            .batchnorm_addend(bn_addend),
             .shift(shift),
             .threshold(threshold_0),
             .is_spike(outputs_0[i])
@@ -164,14 +172,22 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
     end
 
     for (i = 0; i < NEURONS_1; i = i+1) begin : layer_1
+
+        wire [3:0] bn_factor = batchnorm_params_1[BN_PARAM_BITS*i +: 4];
+        wire [BN_ADD_1_BITS-1:0] bn_addend;
+        sign_extend #(4, BN_ADD_1_BITS) sign_extend_bn_addend (
+            .in(batchnorm_params_1[4 + BN_PARAM_BITS*i +: 4]),
+            .out(bn_addend)
+        );
+
         neuron_lif #(.SYNAPSES(SYNAPSES_PER_NEURON_1), .THRESHOLD_BITS(THRESHOLD_1_BITS), .BATCHNORM_ADDEND_BITS(BN_ADD_1_BITS)) lif (
             .clk(clk),
             .reset(reset),
             .enable(execute),
             .inputs(inputs_1 & CONNECTION_MASK_1[i]),
             .weights(weights_1[SYNAPSES_PER_NEURON_1*i +: SYNAPSES_PER_NEURON_1]),
-            .batchnorm_factor(batchnorm_params_1[BN_PARAM_BITS*i +: 4]),
-            .batchnorm_addend(batchnorm_addend_1),
+            .batchnorm_factor(bn_factor),
+            .batchnorm_addend(bn_addend),
             .shift(shift),
             .threshold(threshold_1),
             .is_spike(outputs_1[i])
@@ -180,14 +196,22 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
     // assign uo_out[7:0] = outputs_1[7:0];
 
     for (i = 0; i < NEURONS_2; i = i+1) begin : layer_2
+
+        wire [3:0] bn_factor = batchnorm_params_2[BN_PARAM_BITS*i +: 4];
+        wire [BN_ADD_2_BITS-1:0] bn_addend;
+        sign_extend #(4, BN_ADD_2_BITS) sign_extend_bn_addend (
+            .in(batchnorm_params_2[4 + BN_PARAM_BITS*i +: 4]),
+            .out(bn_addend)
+        );
+
         neuron_lif #(.SYNAPSES(SYNAPSES_PER_NEURON_2), .THRESHOLD_BITS(THRESHOLD_2_BITS), .BATCHNORM_ADDEND_BITS(BN_ADD_2_BITS)) lif (
             .clk(clk),
             .reset(reset),
             .enable(execute),
             .inputs(inputs_2 & CONNECTION_MASK_2[i]),
             .weights(weights_2[SYNAPSES_PER_NEURON_2*i +: SYNAPSES_PER_NEURON_2]),
-            .batchnorm_factor(batchnorm_params_2[BN_PARAM_BITS*i +: 4]),
-            .batchnorm_addend(batchnorm_addend_2),
+            .batchnorm_factor(bn_factor),
+            .batchnorm_addend(bn_addend),
             .shift(shift),
             .threshold(threshold_2),
             .is_spike(outputs_2[i])
