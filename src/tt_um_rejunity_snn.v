@@ -217,6 +217,7 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
     wire [WEIGHTS-1:0] new_weights;
     wire [BATCHNORM_PARAMS-1:0] new_batchnorm_params;
     wire [THRESHOLD_BITS-1:0] new_thresholds;
+    wire [2:0] new_shift;
     if (WEIGHTS > 8) begin
         assign new_weights = { data_in, weights[8 +: WEIGHTS-8]}; // upload first layer first
     end else begin
@@ -237,6 +238,7 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
     end else begin
         assign new_thresholds = data_in[THRESHOLD_BITS-1:0];
     end
+        assign new_shift = data_in[2:0];
     endgenerate
 
     always @(posedge clk) begin
@@ -252,9 +254,12 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
                     3'b000: inputs <= new_inputs;
                     3'b101: inputs <= new_inputs; // for streaming inputs
                     3'b111: inputs <= new_inputs;
+
                     3'b001: weights <= new_weights;
                     3'b110: batchnorm_params <= new_batchnorm_params;
                     3'b011: thresholds <= new_thresholds;
+                    3'b100: shift <= new_shift;
+                    default: begin end
                 endcase
             end
         end
