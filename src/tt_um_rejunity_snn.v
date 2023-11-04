@@ -1,7 +1,6 @@
 `default_nettype none
 
 module tt_um_rejunity_snn #( parameter INPUTS = 16,
-                             // parameter NEURONS_0 = 16, parameter NEURONS_1 = 8
                              parameter NEURONS_0 = 16, parameter NEURONS_1 = 16, parameter NEURONS_2 = 8
 ) (
     input  wire [7:0] ui_in,    // Dedicated inputs - connected to the input switches
