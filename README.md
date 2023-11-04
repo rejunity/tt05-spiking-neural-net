@@ -1,12 +1,18 @@
 ![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg) ![](../../workflows/test/badge.svg)
 
-# Network
-  - 25.88% 243085um  7918 cells 544 dff, 23.26 min gds, 13.55 viewer    <- (16) x 16 x 8
-  - 40.98% 393467um 12384 cells 800 dff, 19.59 min gds,                 <- (16) x 16 x 16 x 8
-  - 43.67% 432050um 12932 cells 928 dff, 29.0  min gds, 47.26 viewer    <  (16) x 16 x 16 x 8 fixed the weights
+# Network stats from older to newer commit
+## 16 tiles
+  - 25.88% 243085um  7918 cells 544 dff, 23.26 min gds, 13.55 viewer    <- 384 synapses (16) x 16 x 8
+  - 40.98% 393467um 12384 cells 800 dff, 19.59 min gds,                 <- 640 synapses (16) x 16 x 16 x 8
+  - 43.67% 432050um 12932 cells 928 dff, 29.0  min gds, 47.26 viewer    <- 640 synapses (16) x 16 x 16 x 8 fixed the weights
+  - 45.23% 427921um 13795 cells 928 dff, 26.5  min gds                  <- 640 synapses (16) x 16 x 16 x 8 **BN added**
 
-  - 17.09% 100777um  5116 cells 808 dff, 15.19 min gds                  <- (16) x 16 x 16 x 8 **50% sparsity!**
-  - 24.72% 183035um  7957 cells 968 dff, 13.22 min gds                  <- (16) x 16 x 16 x 8 **BN scale per neuron**, 50% sparsity!
+  - 17.09% 100777um  5116 cells 808 dff, 15.19 min gds                  <- 320 synapses (16) x 16 x 16 x 8 **50% sparsity!**
+  - 24.72% 183035um  7957 cells 968 dff, 13.22 min gds                  <- 320 synapses (16) x 16 x 16 x 8 **BN scale per neuron**, 50% sparsity!
+
+## 8 tiles
+  - 49.81%, 185466um 7977 cells 968 dff, 15.45 min gds                  <- 320 synapses (16) x 16 x 16 x 8 BN scale per neuron, 50% sparsity!
+
 
 # What is Tiny Tapeout?
 
