@@ -6,14 +6,14 @@ connections = 0
 total = 0
 
 for layer in [	("connections_0.mem", 16, 0.5), \
-				("connections_1.mem", 16, 0.5), \
-				("connections_2.mem",  8, 0.5) ]:
+				("connections_1.mem", 16, 0.65), \
+				("connections_2.mem",  8, 1.0) ]:
 
 	filename = layer[0]
 	neurons = layer[1]
-	sparsity = layer[2]
+	density = layer[2]
 
-	sparsity = np.random.binomial(n=1, p=sparsity, size=[neurons * inputs])
+	sparsity = np.random.binomial(n=1, p=density, size=[neurons * inputs])
 
 	ratio = (100.0-100.0*sum(sparsity)/len(sparsity))
 	print(f"Writing connection mask to {filename}, sparsity {ratio:.2f}%, {sum(sparsity)} connections")
