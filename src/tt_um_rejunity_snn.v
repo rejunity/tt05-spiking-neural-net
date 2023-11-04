@@ -61,10 +61,35 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
     reg signed [BN_ADD_1_BITS-1:0] batchnorm_addend_1;
     reg signed [BN_ADD_2_BITS-1:0] batchnorm_addend_2;
 
-    // Network ----------------------------------------------------------------
     genvar i;
-    generate
+    // Load sparsity matrices -------------------------------------------------
 
+    reg [NEURONS_0-1:0] CONNECTION_MASK_0 [0:SYNAPSES_PER_NEURON_0-1];
+    reg [NEURONS_1-1:0] CONNECTION_MASK_1 [0:SYNAPSES_PER_NEURON_1-1];
+    reg [NEURONS_2-1:0] CONNECTION_MASK_2 [0:SYNAPSES_PER_NEURON_2-1];
+    initial
+    begin
+        $readmemb("connections_0.mem", CONNECTION_MASK_0);
+        $readmemb("connections_1.mem", CONNECTION_MASK_1);
+        $readmemb("connections_2.mem", CONNECTION_MASK_2);
+    end
+    // wire [WEIGHTS_0-1:0] weight_mask_0;
+    // wire [WEIGHTS_1-1:0] weight_mask_1;
+    // wire [WEIGHTS_2-1:0] weight_mask_2;
+    // generate
+    //     for (i = 0; i < SYNAPSES_PER_NEURON_0; i = i + 1) begin
+    //         assign weight_mask_0[(i+1)*NEURONS_0-1:i*NEURONS_0] = CONNECTION_MASK_0[i];
+    //     end
+    //     for (i = 0; i < SYNAPSES_PER_NEURON_1; i = i + 1) begin
+    //         assign weight_mask_1[(i+1)*NEURONS_1-1:i*NEURONS_1] = CONNECTION_MASK_1[i];
+    //     end
+    //     for (i = 0; i < SYNAPSES_PER_NEURON_2; i = i + 1) begin
+    //         assign weight_mask_2[(i+1)*NEURONS_2-1:i*NEURONS_2] = CONNECTION_MASK_2[i];
+    //     end
+    // endgenerate
+
+    // Network ----------------------------------------------------------------
+    generate
     wire [INPUTS-1:0] inputs_0 = inputs;
     wire [WEIGHTS_0-1:0] weights_0;
     wire [NEURONS_0-1:0] outputs_0;
@@ -98,7 +123,7 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
             .clk(clk),
             .reset(reset),
             .enable(execute),
-            .inputs(inputs_0),
+            .inputs(inputs_0 & CONNECTION_MASK_0[i]),
             .weights(weights_0[SYNAPSES_PER_NEURON_0*i +: SYNAPSES_PER_NEURON_0]),
             .batchnorm_factor(batchnorm_factor_0),
             .batchnorm_addend(batchnorm_addend_0),
@@ -113,7 +138,7 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
             .clk(clk),
             .reset(reset),
             .enable(execute),
-            .inputs(inputs_1),
+            .inputs(inputs_1 & CONNECTION_MASK_1[i]),
             .weights(weights_1[SYNAPSES_PER_NEURON_1*i +: SYNAPSES_PER_NEURON_1]),
             .batchnorm_factor(batchnorm_factor_1),
             .batchnorm_addend(batchnorm_addend_1),
@@ -129,7 +154,7 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
             .clk(clk),
             .reset(reset),
             .enable(execute),
-            .inputs(inputs_2),
+            .inputs(inputs_2 & CONNECTION_MASK_2[i]),
             .weights(weights_2[SYNAPSES_PER_NEURON_2*i +: SYNAPSES_PER_NEURON_2]),
             .batchnorm_factor(batchnorm_factor_2),
             .batchnorm_addend(batchnorm_addend_2),
@@ -169,9 +194,9 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
             threshold_0 <= 3;
             threshold_1 <= 7;
             threshold_2 <= 9;
-            batchnorm_factor_0 <= 4'b0100;
-            batchnorm_factor_1 <= 4'b0100;
-            batchnorm_factor_2 <= 4'b0100;
+            batchnorm_factor_0 <= 4'b0010; // 4'b0100;
+            batchnorm_factor_1 <= 4'b0010; // 4'b0100;
+            batchnorm_factor_2 <= 4'b0010; // 4'b0100;
             batchnorm_addend_0 <= 0;
             batchnorm_addend_1 <= 0;
             batchnorm_addend_2 <= 0;
