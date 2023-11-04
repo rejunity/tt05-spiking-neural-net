@@ -12,6 +12,7 @@
 
 ## 8 tiles
   - 49.81%, 185466um 7977 cells 968 dff, 15.45 min gds                  <- 320 synapses (16) x 16 x 16 x 8 BN scale per neuron, 50% sparsity!
+  - 59.47%, 233359um 9486 cells 1128dff, 16.30 min gds                  <- 320 synapses (16) x 16 x 16 x 8 **BN scale+add** per neuron, 50% sparsity!
 
 
 # What is Tiny Tapeout?
