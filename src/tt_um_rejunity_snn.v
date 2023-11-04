@@ -81,13 +81,6 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
 
     reg [WEIGHTS-1:0] weights;
 
-    reg [WEIGHTS_0-1:0] weights_0_;
-    reg [WEIGHTS_1-1:0] weights_1_;
-    reg [WEIGHTS_2-1:0] weights_2_;
-
-    // assign weights_0 = weights[WEIGHTS_0-1:0];
-    // assign weights_1 = weights[WEIGHTS_0+WEIGHTS_1-1:WEIGHTS_0];
-    // assign weights_2 = weights[WEIGHTS_0+WEIGHTS_1+WEIGHTS_2-1:WEIGHTS_0+WEIGHTS_1];
     assign weights_0 = weights[0                    +: WEIGHTS_0];
     assign weights_1 = weights[WEIGHTS_0            +: WEIGHTS_1];
     assign weights_2 = weights[WEIGHTS_0+WEIGHTS_1  +: WEIGHTS_2];
@@ -163,11 +156,6 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
             threshold_1 <= 7;
             threshold_2 <= 9;
             // bias <= 0;
-
-            weights_0_ <= 0;
-            weights_1_ <= 0;
-            weights_2_ <= 0;
-
         end else begin
             if (input_mode) begin
                 if (input_weights)
