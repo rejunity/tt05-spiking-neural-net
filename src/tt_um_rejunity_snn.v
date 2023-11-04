@@ -94,20 +94,6 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
         $readmemb("connections_1.mem", CONNECTION_MASK_1);
         $readmemb("connections_2.mem", CONNECTION_MASK_2);
     end
-    // wire [WEIGHTS_0-1:0] weight_mask_0;
-    // wire [WEIGHTS_1-1:0] weight_mask_1;
-    // wire [WEIGHTS_2-1:0] weight_mask_2;
-    // generate
-    //     for (i = 0; i < SYNAPSES_PER_NEURON_0; i = i + 1) begin
-    //         assign weight_mask_0[(i+1)*NEURONS_0-1:i*NEURONS_0] = CONNECTION_MASK_0[i];
-    //     end
-    //     for (i = 0; i < SYNAPSES_PER_NEURON_1; i = i + 1) begin
-    //         assign weight_mask_1[(i+1)*NEURONS_1-1:i*NEURONS_1] = CONNECTION_MASK_1[i];
-    //     end
-    //     for (i = 0; i < SYNAPSES_PER_NEURON_2; i = i + 1) begin
-    //         assign weight_mask_2[(i+1)*NEURONS_2-1:i*NEURONS_2] = CONNECTION_MASK_2[i];
-    //     end
-    // endgenerate
 
     // Network ----------------------------------------------------------------
     generate
@@ -229,19 +215,16 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
     wire [BATCHNORM_PARAMS-1:0] new_batchnorm_params;
     if (WEIGHTS > 8) begin
         assign new_weights = { data_in, weights[8 +: WEIGHTS-8]}; // upload first layer first
-        // assign new_weights = { weights[0 +: WEIGHTS-8], data_in };
     end else begin
         assign new_weights = data_in[WEIGHTS-1:0];
     end
     if (INPUTS > 8) begin
         assign new_inputs = { data_in, inputs[8 +: INPUTS-8] }; // upload with struct.pack "<"" order
-        // assign new_inputs = { inputs[0 +: INPUTS-8], data_in };
     end else begin
         assign new_inputs = data_in[INPUTS-1:0];
     end
     if (BATCHNORM_PARAMS > 8) begin
         assign new_batchnorm_params = { data_in, batchnorm_params[8 +: BATCHNORM_PARAMS-8] };
-        // assign new_batchnorm_params = { batchnorm_params[0 +: BATCHNORM_PARAMS-8], data_in };
     end else begin
         assign new_batchnorm_params = data_in[BATCHNORM_PARAMS-1:0];
     end
