@@ -5,6 +5,8 @@
   - 40.98% 393467um 12384 cells 800 dff, 19.59 min gds,                 <- (16) x 16 x 16 x 8
   - 43.67% 432050um 12932 cells 928 dff, 29.0  min gds, 47.26 viewer    <  (16) x 16 x 16 x 8 fixed the weights
 
+  - 17.09% 100777um  5116 cells 808 dff, 15.19 min gds                  <- (16) x 16 x 16 x 8 **50% sparsity!**
+
 
 # What is Tiny Tapeout?
 
