@@ -21,6 +21,10 @@ def neuron(x, w, last_u, shift = 0, threshold = 5):
 
 ### TESTS #####################################################################
 
+SETUP_WEIGHTS = 0b001_00
+SETUP_INPUT   = 0b000_00 # 0b111_00
+IDLE          = 0b010_00
+EXECUTE       = 1
 
 # @cocotb.test()
 # async def test_neuron_spike_train(dut):
@@ -68,7 +72,7 @@ async def test_snn_silence(dut):
     await reset(dut)
     await ClockCycles(dut.clk, 8)
     dut._log.info("execute")
-    dut.uio_in.value = 2
+    dut.uio_in.value = EXECUTE
     for i in range(32):
         await ClockCycles(dut.clk, 1)
         print_chip_state(dut)
@@ -84,7 +88,7 @@ async def test_snn_simple(dut):
     u = 0
     spike_train = []
 
-    dut.uio_in.value = 1
+    dut.uio_in.value = SETUP_WEIGHTS
     dut.ui_in.value = 0xAA
     for n in range(32):
         await ClockCycles(dut.clk, 1)
@@ -96,7 +100,7 @@ async def test_snn_simple(dut):
         await ClockCycles(dut.clk, 1)
         dut.ui_in.value = 31
     await ClockCycles(dut.clk, 1)
-    dut.uio_in.value = 0
+    dut.uio_in.value = IDLE
     dut.ui_in.value = 0xAA
     await ClockCycles(dut.clk, 1)
     print_chip_state(dut, print_weights=True)
@@ -104,14 +108,20 @@ async def test_snn_simple(dut):
     print_chip_state(dut, print_weights=True)
 
     dut._log.info(f"set input {bin(x)}")
-    dut.uio_in.value = 0
+    dut.uio_in.value = SETUP_INPUT
     for v in struct.Struct('<H').pack(x):
         dut.ui_in.value = v
         await ClockCycles(dut.clk, 1)
     print_chip_state(dut)
 
+    dut.uio_in.value = IDLE
+    dut.ui_in.value = 0xAA
+    print_chip_state(dut, print_inputs=True)
+    await ClockCycles(dut.clk, 1)
+    print_chip_state(dut, print_inputs=True)
+
     dut._log.info("execute")
-    dut.uio_in.value = 2
+    dut.uio_in.value = EXECUTE
     for i in range(32):
         await ClockCycles(dut.clk, 1)
         print_chip_state(dut)
@@ -119,7 +129,7 @@ async def test_snn_simple(dut):
     await done(dut)
 
 
-@cocotb.test()
+# @cocotb.test()
 async def test_snn_procedural(dut):
 
     # x = 0b0000_0000_0000_1111
@@ -151,7 +161,7 @@ async def test_snn_procedural(dut):
     # print_chip_state(dut, print_weights=True)
 
 
-    dut.uio_in.value = 1
+    dut.uio_in.value = SETUP_WEIGHTS
     dut.ui_in.value = 0xAA
     for n in range(32):
         await ClockCycles(dut.clk, 1)
@@ -163,7 +173,7 @@ async def test_snn_procedural(dut):
         await ClockCycles(dut.clk, 1)
         dut.ui_in.value = min(255, 63+n*21)
     await ClockCycles(dut.clk, 1)
-    dut.uio_in.value = 0
+    dut.uio_in.value = IDLE
     dut.ui_in.value = 0xAA
     await ClockCycles(dut.clk, 1)
     print_chip_state(dut, print_weights=True)
@@ -181,14 +191,14 @@ async def test_snn_procedural(dut):
         # await ClockCycles(dut.clk, 1)      
 
     dut._log.info(f"set input {bin(x)}")
-    dut.uio_in.value = 0
+    dut.uio_in.value = SETUP_INPUT
     for v in struct.Struct('<H').pack(x):
         dut.ui_in.value = v
         await ClockCycles(dut.clk, 1)
     print_chip_state(dut)
 
     dut._log.info("execute")
-    dut.uio_in.value = 2
+    dut.uio_in.value = EXECUTE
     for i in range(32):
         await ClockCycles(dut.clk, 1)
         print_chip_state(dut)
@@ -215,21 +225,21 @@ async def test_snn_overflow(dut):
 
     if w >= 0:
         dut._log.info(f"load weights {bin(w)}")
-        dut.uio_in.value = 1
+        dut.uio_in.value = SETUP_WEIGHTS
         for v in struct.Struct('>I').pack(w):
             dut.ui_in.value = v
             await ClockCycles(dut.clk, 1)
         print_chip_state(dut)
 
     dut._log.info(f"set input {bin(x)}")
-    dut.uio_in.value = 0
+    dut.uio_in.value = SETUP_INPUT
     for v in struct.Struct('>I').pack(x):
         dut.ui_in.value = v
         await ClockCycles(dut.clk, 1)
     print_chip_state(dut)
 
     dut._log.info("execute")
-    dut.uio_in.value = 2
+    dut.uio_in.value = EXECUTE
     for i in range(16):
         await ClockCycles(dut.clk, 1)
         print_chip_state(dut)
@@ -244,7 +254,7 @@ async def test_snn_overflow(dut):
 
 ### UTILS #####################################################################
 
-def print_chip_state(dut, sim=None, print_weights=False):
+def print_chip_state(dut, sim=None, print_inputs=False, print_weights=False):
     try:
         internal = dut.tt_um_rejunity_snn_uut
         print(  "W" if dut.uio_in.value & 1 else "I",
@@ -252,6 +262,7 @@ def print_chip_state(dut, sim=None, print_weights=False):
                 dut.ui_in.value, '|',
                 internal.inputs.value, '*',
                 sum(internal.weights.value),
+                internal.inputs.value if print_inputs else "",
                 internal.weights.value if print_weights else "", '|',
                 (internal.weights_0.value, internal.weights_1.value, internal.weights_2.value) if print_weights else "", '=',
                 internal.outputs_0.value,
