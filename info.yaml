@@ -29,8 +29,8 @@ yaml_version: 4
 #
 # Here is a great example: https://github.com/davidsiaw/tt02-davidsiaw-stackcalc/blob/38c5647f83aad2aec675d566aa3d67b98f0aac81/info.yaml
 documentation: 
-  author:       "rej"      # Your name
-  title:        "Chonky SNN"      # Project title
+  author:       "ReJ aka Renaldas Zioma, Paola Vitolo, Andrew Wabnitz. Big thanks to Jason Eshraghian!"      # Your name
+  title:        "Chonky Spiking Neural Net"      # Project title
   language:     "Verilog" # other examples include Verilog, Amaranth, VHDL, etc
   description:  "3 layer Spiking Neural Net with on-chip weights"      # Short description of what your project does
 
@@ -69,9 +69,9 @@ documentation:
     - (in) SETUP_CONTROL 0 bit
     - (in) SETUP_CONTROL 1 bit
     - (in) SETUP_CONTROL 2 bit
-    - none
-    - none
-    - none
+    - (out) debug neuron layer 1
+    - (out) debug neuron layer 2
+    - (out) debug neuron layer 2
 
 # The following fields are optional
   tag:          "neural net"      # comma separated list of tags: test, encryption, experiment, clock, animation, utility, industrial, pwm, fpga, alu, microprocessor, risc, riscv, sensor, signal generator, fft, filter, music, bcd, sound, serial, timer, random number generator, calculator, decoder, counter, puzzle, multiplier, game, oscillator,
