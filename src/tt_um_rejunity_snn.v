@@ -244,7 +244,7 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
             weights <= WEIGHT_INIT;
             batchnorm_params <= BATCHNORM_PARAMS_INIT;
             inputs <= 0;
-            shift <= 0;
+            shift <= 4;
             thresholds <= THRESHOLDS_INIT;
         end else begin
             if (setup_enable) begin
