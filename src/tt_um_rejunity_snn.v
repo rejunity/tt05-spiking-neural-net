@@ -57,6 +57,7 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
     localparam THRESHOLD_0_BITS = $clog2(SYNAPSES_PER_NEURON_0)+1;
     localparam THRESHOLD_1_BITS = $clog2(SYNAPSES_PER_NEURON_1)+1;
     localparam THRESHOLD_2_BITS = $clog2(SYNAPSES_PER_NEURON_2)+1;
+    localparam THRESHOLD_BITS = THRESHOLD_0_BITS + THRESHOLD_1_BITS + THRESHOLD_0_BITS;
 
     localparam BN_ADD_0_BITS = $clog2(SYNAPSES_PER_NEURON_0);
     localparam BN_ADD_1_BITS = $clog2(SYNAPSES_PER_NEURON_1);
@@ -64,22 +65,17 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
     localparam BN_PARAM_BITS = 8;
     localparam BATCHNORM_PARAMS = NEURONS*BN_PARAM_BITS;
 
+
     localparam WEIGHT_INIT = {WEIGHTS{1'b1}}; // on reset intialise all weights to +1
     localparam BATCHNORM_PARAMS_INIT = {NEURONS{8'b0000_0010}}; // on reset intialise all batchnorm
                                                                 // params to {scale=2, add=0}
 
-    reg [INPUTS-1: 0] inputs;
-    reg [THRESHOLD_0_BITS-1:0] threshold_0;
-    reg [THRESHOLD_1_BITS-1:0] threshold_1;
-    reg [THRESHOLD_2_BITS-1:0] threshold_2;
-    reg [2:0] shift;
+    localparam THRESHOLDS_INIT = {5'd9, 5'd7, 5'd3 };           // on reset intialise thresholds
+                                                                // in reverse layer order
 
-    reg [3:0] batchnorm_factor_0;
-    reg [3:0] batchnorm_factor_1;
-    reg [3:0] batchnorm_factor_2;
-    reg signed [BN_ADD_0_BITS-1:0] batchnorm_addend_0;
-    reg signed [BN_ADD_1_BITS-1:0] batchnorm_addend_1;
-    reg signed [BN_ADD_2_BITS-1:0] batchnorm_addend_2;
+    reg [INPUTS-1: 0] inputs;
+    reg [THRESHOLD_BITS-1:0] thresholds;
+    reg [2:0] shift;
 
     genvar i;
     // Load sparsity matrices -------------------------------------------------
@@ -112,6 +108,10 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
     wire [NEURONS_1*BN_PARAM_BITS-1:0] batchnorm_params_1;
     wire [NEURONS_2*BN_PARAM_BITS-1:0] batchnorm_params_2;
 
+    wire [THRESHOLD_0_BITS-1:0] threshold_0;
+    wire [THRESHOLD_1_BITS-1:0] threshold_1;
+    wire [THRESHOLD_2_BITS-1:0] threshold_2;
+
     always @(posedge clk) begin
         if (reset) begin
             inputs_1 <= 0;
@@ -132,6 +132,10 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
     assign batchnorm_params_0 = batchnorm_params[0                    *BN_PARAM_BITS +: NEURONS_0*BN_PARAM_BITS];
     assign batchnorm_params_1 = batchnorm_params[NEURONS_0            *BN_PARAM_BITS +: NEURONS_1*BN_PARAM_BITS];
     assign batchnorm_params_2 = batchnorm_params[(NEURONS_0+NEURONS_1)*BN_PARAM_BITS +: NEURONS_2*BN_PARAM_BITS];
+
+    assign threshold_0 = thresholds[0                                   +: THRESHOLD_0_BITS];
+    assign threshold_1 = thresholds[THRESHOLD_0_BITS                    +: THRESHOLD_1_BITS];
+    assign threshold_2 = thresholds[THRESHOLD_0_BITS+THRESHOLD_1_BITS   +: THRESHOLD_2_BITS];
 
     for (i = 0; i < NEURONS_0; i = i+1) begin : layer_0
 
@@ -212,6 +216,7 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
     wire [INPUTS-1: 0] new_inputs;
     wire [WEIGHTS-1:0] new_weights;
     wire [BATCHNORM_PARAMS-1:0] new_batchnorm_params;
+    wire [THRESHOLD_BITS-1:0] new_thresholds;
     if (WEIGHTS > 8) begin
         assign new_weights = { data_in, weights[8 +: WEIGHTS-8]}; // upload first layer first
     end else begin
@@ -227,6 +232,11 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
     end else begin
         assign new_batchnorm_params = data_in[BATCHNORM_PARAMS-1:0];
     end
+    if (THRESHOLD_BITS > 8) begin
+        assign new_thresholds = { data_in, thresholds[0 +: THRESHOLD_BITS-8] };
+    end else begin
+        assign new_thresholds = data_in[THRESHOLD_BITS-1:0];
+    end
     endgenerate
 
     always @(posedge clk) begin
@@ -235,15 +245,7 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
             batchnorm_params <= BATCHNORM_PARAMS_INIT;
             inputs <= 0;
             shift <= 0;
-            threshold_0 <= 3;
-            threshold_1 <= 7;
-            threshold_2 <= 9;
-            batchnorm_factor_0 <= 4'b0010; // 4'b0100;
-            batchnorm_factor_1 <= 4'b0010; // 4'b0100;
-            batchnorm_factor_2 <= 4'b0010; // 4'b0100;
-            batchnorm_addend_0 <= 0;
-            batchnorm_addend_1 <= 0;
-            batchnorm_addend_2 <= 0;
+            thresholds <= THRESHOLDS_INIT;
         end else begin
             if (setup_enable) begin
                 case(setup_control)
@@ -252,6 +254,7 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
                     3'b111: inputs <= new_inputs;
                     3'b001: weights <= new_weights;
                     3'b110: batchnorm_params <= new_batchnorm_params;
+                    3'b011: thresholds <= new_thresholds;
                 endcase
             end
         end
