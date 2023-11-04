@@ -41,7 +41,10 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
     localparam THRESHOLD_0_BITS = $clog2(SYNAPSES_PER_NEURON_0)+1;
     localparam THRESHOLD_1_BITS = $clog2(SYNAPSES_PER_NEURON_1)+1;
     localparam THRESHOLD_2_BITS = $clog2(SYNAPSES_PER_NEURON_2)+1;
-    // localparam BIAS_BITS      = $clog2(INPUTS)+2;
+
+    localparam BN_ADD_0_BITS = $clog2(SYNAPSES_PER_NEURON_0);
+    localparam BN_ADD_1_BITS = $clog2(SYNAPSES_PER_NEURON_1);
+    localparam BN_ADD_2_BITS = $clog2(SYNAPSES_PER_NEURON_2);
 
     localparam WEIGHT_INIT = {WEIGHTS{1'b1}}; // on reset intialise all weights to +1
 
@@ -49,9 +52,14 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
     reg [THRESHOLD_0_BITS-1:0] threshold_0;
     reg [THRESHOLD_1_BITS-1:0] threshold_1;
     reg [THRESHOLD_2_BITS-1:0] threshold_2;
-    // reg signed [BIAS_BITS-1:0] bias;
     reg [2:0] shift;
 
+    reg [3:0] batchnorm_factor_0;
+    reg [3:0] batchnorm_factor_1;
+    reg [3:0] batchnorm_factor_2;
+    reg signed [BN_ADD_0_BITS-1:0] batchnorm_addend_0;
+    reg signed [BN_ADD_1_BITS-1:0] batchnorm_addend_1;
+    reg signed [BN_ADD_2_BITS-1:0] batchnorm_addend_2;
 
     // Network ----------------------------------------------------------------
     genvar i;
@@ -86,12 +94,14 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
     assign weights_2 = weights[WEIGHTS_0+WEIGHTS_1  +: WEIGHTS_2];
 
     for (i = 0; i < NEURONS_0; i = i+1) begin : layer_0
-        neuron_lif #(.SYNAPSES(SYNAPSES_PER_NEURON_0), .THRESHOLD_BITS(THRESHOLD_0_BITS)) lif (
+        neuron_lif #(.SYNAPSES(SYNAPSES_PER_NEURON_0), .THRESHOLD_BITS(THRESHOLD_0_BITS), .BATCHNORM_ADDEND_BITS(BN_ADD_0_BITS)) lif (
             .clk(clk),
             .reset(reset),
             .enable(execute),
             .inputs(inputs_0),
             .weights(weights_0[SYNAPSES_PER_NEURON_0*i +: SYNAPSES_PER_NEURON_0]),
+            .batchnorm_factor(batchnorm_factor_0),
+            .batchnorm_addend(batchnorm_addend_0),
             .shift(shift),
             .threshold(threshold_0),
             .is_spike(outputs_0[i])
@@ -99,12 +109,14 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
     end
 
     for (i = 0; i < NEURONS_1; i = i+1) begin : layer_1
-        neuron_lif #(.SYNAPSES(SYNAPSES_PER_NEURON_1), .THRESHOLD_BITS(THRESHOLD_1_BITS)) lif (
+        neuron_lif #(.SYNAPSES(SYNAPSES_PER_NEURON_1), .THRESHOLD_BITS(THRESHOLD_1_BITS), .BATCHNORM_ADDEND_BITS(BN_ADD_1_BITS)) lif (
             .clk(clk),
             .reset(reset),
             .enable(execute),
             .inputs(inputs_1),
             .weights(weights_1[SYNAPSES_PER_NEURON_1*i +: SYNAPSES_PER_NEURON_1]),
+            .batchnorm_factor(batchnorm_factor_1),
+            .batchnorm_addend(batchnorm_addend_1),
             .shift(shift),
             .threshold(threshold_1),
             .is_spike(outputs_1[i])
@@ -113,12 +125,14 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
     // assign uo_out[7:0] = outputs_1[7:0];
 
     for (i = 0; i < NEURONS_2; i = i+1) begin : layer_2
-        neuron_lif #(.SYNAPSES(SYNAPSES_PER_NEURON_2), .THRESHOLD_BITS(THRESHOLD_2_BITS)) lif (
+        neuron_lif #(.SYNAPSES(SYNAPSES_PER_NEURON_2), .THRESHOLD_BITS(THRESHOLD_2_BITS), .BATCHNORM_ADDEND_BITS(BN_ADD_2_BITS)) lif (
             .clk(clk),
             .reset(reset),
             .enable(execute),
             .inputs(inputs_2),
             .weights(weights_2[SYNAPSES_PER_NEURON_2*i +: SYNAPSES_PER_NEURON_2]),
+            .batchnorm_factor(batchnorm_factor_2),
+            .batchnorm_addend(batchnorm_addend_2),
             .shift(shift),
             .threshold(threshold_2),
             .is_spike(outputs_2[i])
@@ -155,7 +169,12 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
             threshold_0 <= 3;
             threshold_1 <= 7;
             threshold_2 <= 9;
-            // bias <= 0;
+            batchnorm_factor_0 <= 4'b0100;
+            batchnorm_factor_1 <= 4'b0100;
+            batchnorm_factor_2 <= 4'b0100;
+            batchnorm_addend_0 <= 0;
+            batchnorm_addend_1 <= 0;
+            batchnorm_addend_2 <= 0;
         end else begin
             if (input_mode) begin
                 if (input_weights)
