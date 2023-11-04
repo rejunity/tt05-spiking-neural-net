@@ -6,8 +6,8 @@ connections = 0
 total = 0
 
 for layer in [	("connections_0.mem", 16, 0.5), \
-				("connections_1.mem", 16, 0.65), \
-				("connections_2.mem",  8, 0.75) ]:
+				("connections_1.mem", 16, 0.5), \
+				("connections_2.mem",  8, 0.5) ]:
 
 	filename = layer[0]
 	neurons = layer[1]
