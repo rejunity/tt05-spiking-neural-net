@@ -129,7 +129,7 @@ async def test_snn_simple(dut):
     await done(dut)
 
 
-# @cocotb.test()
+@cocotb.test()
 async def test_snn_procedural(dut):
 
     # x = 0b0000_0000_0000_1111
