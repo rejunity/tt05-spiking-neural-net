@@ -6,7 +6,7 @@
   - 43.67% 432050um 12932 cells 928 dff, 29.0  min gds, 47.26 viewer    <  (16) x 16 x 16 x 8 fixed the weights
 
   - 17.09% 100777um  5116 cells 808 dff, 15.19 min gds                  <- (16) x 16 x 16 x 8 **50% sparsity!**
-
+  - 24.72% 183035um  7957 cells 968 dff, 13.22 min gds                  <- (16) x 16 x 16 x 8 **BN scale per neuron**, 50% sparsity!
 
 # What is Tiny Tapeout?
 
