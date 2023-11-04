@@ -23,7 +23,7 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
     wire _unused_1, _unused_2;
 
     assign uio_oe[7:0]  = 8'b111_000_00; // 5 pins in input mode: 2 pins for execution control, 3 pins for SETUP mode.
-    assign uio_out[7:0] = 8'b0000_0000;
+    assign uio_out[4:0] =     8'b000_00; // 3 pins in output mode: debug axon outputs from 3 neurons in the middle layers.
 
     wire reset = !rst_n;
     wire [7:0] data_in = ui_in;
@@ -202,7 +202,7 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
             .is_spike(outputs_2[i])
         );
     end
-    assign uo_out[7:0] = outputs_2[7:0];
+    // assign uo_out[7:0] = outputs_2[7:0];
 
     endgenerate
 
@@ -256,5 +256,13 @@ module tt_um_rejunity_snn #( parameter INPUTS = 16,
             end
         end
     end
+
+    // Debug outputs from 3 neurons in the middle
+    assign uio_out[5] = outputs_0[0];
+    assign uio_out[6] = outputs_1[0];
+    assign uio_out[7] = outputs_1[NEURONS_1-1];
+
+    // Outputs from the last layer
+    assign uo_out[7:0] = outputs_2[7:0];
 
 endmodule
