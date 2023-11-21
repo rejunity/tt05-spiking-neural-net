@@ -20,13 +20,16 @@ def neuron(x, w, last_u, shift = 0, threshold = 5):
     return spike, u
 
 ### TESTS #####################################################################
+CONTROL_PINS  = 6
+DATA_PINS     = 11
 
 RESET         = 0
 N_RESET       = (1<<5)
-SETUP_WEIGHTS = (1<<5) | (0b001_00 <<6)
-SETUP_INPUT   = (1<<5) | (0b000_00 <<6)
-IDLE          = (1<<5) | (0b010_00 <<6)
-EXECUTE       = (1<<5) | (1 << 6)
+SETUP_WEIGHTS = (1<<5) | (0b001_00 << CONTROL_PINS)
+SETUP_INPUT   = (1<<5) | (0b000_00 << CONTROL_PINS)
+IDLE          = (1<<5) | (0b010_00 << CONTROL_PINS)
+EXECUTE       = (1<<5) | (1 << CONTROL_PINS)
+
 
 # @cocotb.test()
 # async def test_neuron_spike_train(dut):
@@ -80,60 +83,56 @@ async def test_snn_silence(dut):
         print_chip_state(dut)
     await done(dut)
 
-# @cocotb.test()
-# async def test_snn_simple(dut):
+@cocotb.test()
+async def test_snn_simple(dut):
 
-#     # x = 0b0000_0000_0000_1111
-#     x = 0b0000_0000_0000_0001
+    # x = 0b0000_0000_0000_1111
+    x = 0b0000_0000_0000_0001
 
-#     await reset(dut)
-#     u = 0
-#     spike_train = []
+    await reset(dut)
+    u = 0
+    spike_train = []
 
-#     dut.uio_in.value = SETUP_WEIGHTS
-#     dut.ui_in.value = 0xAA
-#     for n in range(32):
-#         await ClockCycles(dut.clk, 1)
-#         dut.ui_in.value = 1
-#     for n in range(32):
-#         await ClockCycles(dut.clk, 1)
-#         dut.ui_in.value = 63
-#     for n in range(16):
-#         await ClockCycles(dut.clk, 1)
-#         dut.ui_in.value = 31
-#     await ClockCycles(dut.clk, 1)
-#     dut.uio_in.value = IDLE
-#     dut.ui_in.value = 0xAA
-#     await ClockCycles(dut.clk, 1)
-#     print_chip_state(dut, print_weights=True)
-#     await ClockCycles(dut.clk, 1)
-#     print_chip_state(dut, print_weights=True)
+    dut.io_in.value = SETUP_WEIGHTS | (0xAA << DATA_PINS)
+    for n in range(32):
+        await ClockCycles(dut.clk, 1)
+        dut.io_in.value = SETUP_WEIGHTS | (1 << DATA_PINS)
+    for n in range(32):
+        await ClockCycles(dut.clk, 1)
+        dut.io_in.value = SETUP_WEIGHTS | (63 << DATA_PINS)
+    for n in range(16):
+        await ClockCycles(dut.clk, 1)
+        dut.io_in.value = SETUP_WEIGHTS | (31 << DATA_PINS)
+    await ClockCycles(dut.clk, 1)
+    dut.io_in.value = IDLE | (0xAA << DATA_PINS)
+    await ClockCycles(dut.clk, 1)
+    print_chip_state(dut, print_weights=True)
+    await ClockCycles(dut.clk, 1)
+    print_chip_state(dut, print_weights=True)
 
-#     dut._log.info(f"set input {bin(x)}")
-#     dut.uio_in.value = SETUP_INPUT
-#     for v in struct.Struct('<H').pack(x):
-#         dut.ui_in.value = v
-#         await ClockCycles(dut.clk, 1)
-#     print_chip_state(dut)
+    dut._log.info(f"set input {bin(x)}")
+    for v in struct.Struct('<H').pack(x):
+        dut.io_in.value = SETUP_INPUT | (v << DATA_PINS)
+        await ClockCycles(dut.clk, 1)
+    print_chip_state(dut)
 
-#     dut.uio_in.value = IDLE
-#     dut.ui_in.value = 0xAA
-#     print_chip_state(dut, print_inputs=True)
-#     await ClockCycles(dut.clk, 1)
-#     print_chip_state(dut, print_inputs=True)
+    dut.io_in.value = IDLE | (0xAA << DATA_PINS)
+    print_chip_state(dut, print_inputs=True)
+    await ClockCycles(dut.clk, 1)
+    print_chip_state(dut, print_inputs=True)
 
-#     dut._log.info("execute")
-#     dut.uio_in.value = EXECUTE
-#     for i in range(32):
-#         await ClockCycles(dut.clk, 1)
-#         print_chip_state(dut)
+    dut._log.info("execute")
+    dut.io_in.value = EXECUTE
+    for i in range(32):
+        await ClockCycles(dut.clk, 1)
+        print_chip_state(dut)
 
-#     await done(dut)
+    await done(dut)
 
 ### UTILS #####################################################################
 
 def print_chip_state(dut, sim=None, print_inputs=False, print_weights=False):
-    return
+    return 
     try:
         internal = dut.tt_um_rejunity_snn_uut
         print(  "W" if dut.uio_in.value & 1 else "I",
