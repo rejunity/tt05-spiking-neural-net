@@ -54,6 +54,9 @@ module gfmpw_rejunity_snn #( parameter INPUTS = 16,
     assign io_oeb[DATA_PINS +: DATA_PIN_0] = 8'b1111_1111; // 8 pins in input mode.
     assign io_out[DATA_PINS +: DATA_PIN_0] = 8'b0000_0000;
 
+    assign io_oeb[29:19] = {11{1'b1}};
+    assign io_out[29:19] = {11{1'b0}};
+
     //assign io_oeb[OUTPUT_PINS +: OUTPUT_PIN_0] = 8'b0000_0000; // 8 pins in output mode.
     assign io_oeb[37:30] = 8'b0000_0000; // 8 pins in output mode.
 
@@ -298,6 +301,8 @@ module gfmpw_rejunity_snn #( parameter INPUTS = 16,
     // Debug outputs from neurons in the mid layers
     assign la_data_out[15:0]  = outputs_0[15:0];
     assign la_data_out[32:16] = outputs_1[15:0];
+    assign la_data_out[63:33] = {32{1'b0}};
+
 
     // Outputs from the last layer
     // assign io_out[8 +: OUTPUT_PIN_0] = outputs_2[7:0];
