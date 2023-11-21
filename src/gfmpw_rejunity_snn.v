@@ -68,8 +68,6 @@ module gfmpw_rejunity_snn #( parameter INPUTS = 16,
         .clk(clk),
         .reset(reset),
         .signal(setup_sync),
-        .on_edge(_unused_1),
-        .on_negedge(_unused_2),
         .on_posedge(setup_sync_posedge)
     );
     wire setup_enable = !execute; //setup_sync_posedge | (setup_control == 3'b101); // streaming input mode

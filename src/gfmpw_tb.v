@@ -2,7 +2,8 @@
 `timescale 1ns/1ps
 
 // testbench is controlled by test.py
-module tb_gfmpw ();
+// module tb_gfmpw ();
+module tb ();
 
     // this part dumps the trace to a vcd file that can be viewed with GTKWave
     initial begin
@@ -14,9 +15,9 @@ module tb_gfmpw ();
     // wire up the inputs and outputs
     reg  clk;
     reg  rst_n;
-    reg  [7:0] io_in;
-    wire [7:0] io_out;
-    wire [7:0] io_oeb;
+    reg  [37:0] io_in;
+    wire [37:0] io_out;
+    wire [37:0] io_oeb;
     wire [63:0] la_data_out;
     wire [2:0] irq;
 
@@ -30,13 +31,12 @@ module tb_gfmpw ();
     //     .VPWR( 1'b1),
     //     .VGND( 1'b0),
     // `endif
-        .uio_in     (uio_in),       // IOs: Input path
-        .uio_out    (uio_out),      // IOs: Output path
-        .uio_oe     (uio_oe),       // IOs: Enable path (active high: 0=input, 1=output)
+        .io_in      (io_in),        // IOs: Input path
+        .io_out     (io_out),       // IOs: Output path
+        .io_oeb     (io_oeb),       // IOs: Enable path (active high: 0=input, 1=output)
         .la_data_out(la_data_out),  // Logic analyzer probes
         .irq        (irq),          // IRQs
-        .wb_clk_i   (clk),          // clock
-        .reset      (!rst_n)        // reset
+        .wb_clk_i   (clk)           // clock
         );
 
 endmodule
