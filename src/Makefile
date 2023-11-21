@@ -13,7 +13,8 @@ VERILOG_SOURCES += $(PWD)/adder_tree.v $(PWD)/multiplier_accumulator.v
 VERILOG_SOURCES += $(PWD)/signed_clamped_adder.v $(PWD)/batch_normalization.v
 VERILOG_SOURCES += $(PWD)/membrane.v $(PWD)/neuron_lif.v
 VERILOG_SOURCES += $(PWD)/pwm.v $(PWD)/neuron_pwm.v
-VERILOG_SOURCES += $(PWD)/signal_edge.v $(PWD)/tt_um_rejunity_snn.v $(PWD)/tb.v
+VERILOG_SOURCES += $(PWD)/signal_edge.v
+VERILOG_SOURCES += $(PWD)/gfmpw_rejunity_snn.v $(PWD)/gfmpw_tb.v
 
 else
 
