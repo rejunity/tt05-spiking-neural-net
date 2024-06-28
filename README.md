@@ -19,7 +19,15 @@ Sample neural network consisting of 40 neurons and 320 synapses fits in less tha
 
 ## ASIC tapeout
 
-**"The Huge"** Binarized Neural Network On-Chip was tapedout on [FOSS 130nm Production process](https://skywater-pdk.readthedocs.io/en/main/) via [Tiny Tapeout](https://tinytapeout.com/runs/tt05/) initiative, project [#582](https://tinytapeout.com/runs/tt05/582/).
+**"The Huge"** Binarized Neural Network On-Chip was tapedout on [FOSS 130nm Production process](https://skywater-pdk.readthedocs.io/en/main/) via [Tiny Tapeout](https://tinytapeout.com/runs/tt05/) initiative.
+
+The project [#582](https://tinytapeout.com/runs/tt05/582/).
+
+<p align="center" width="100%">
+  <img width="30%" src="./tt05_full_gds.png">
+  <img width="30%" src="./tt05_logic_density.png">
+</p>
+
 
 # The team
   - Dr. Paola Vitolo
