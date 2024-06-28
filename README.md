@@ -28,6 +28,8 @@ The project [#582](https://tinytapeout.com/runs/tt05/582/).
   <img width="30%" src="./tt05_logic_density.png">
 </p>
 
+## 
+The standalone test for a Binarized Leaky Integrate and Fire (BLIF) neuron can be found in [https://github.com/rejunity/tt04-LIF-neuron-telluride2023]([https://github.com/rejunity/tt04-LIF-neuron-telluride2023]) and it was tapedout with [Tiny Tapeout 4 / CI2309](https://tinytapeout.com/runs/tt05/) shuttle.
 
 # The team
   - Dr. Paola Vitolo
