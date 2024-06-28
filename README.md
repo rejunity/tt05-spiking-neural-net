@@ -4,7 +4,7 @@
 
 **"The Huge"** Binarized Neural Network On-Chip was developed during the [Telluride Neuromorphic Workshop 2023](https://sites.google.com/view/telluride-2023/home) as a project for the [OSN23: Open-Source Neuromorphic Hardware, Software and Wetware](https://sites.google.com/view/telluride-2023/topic-areas/osn23-open-source-neuromorphic-hardware-software-and-wetware) topic.
 
-**To our knowledge this is the first Telluride project that resulted in production of a physical silicon chip!**
+**NOTE: To our knowledge this is the first Telluride project that resulted in production of a physical silicon chip!**
 
 ## Design goals
 The design goals behind this project:
